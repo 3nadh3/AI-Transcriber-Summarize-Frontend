@@ -1,12 +1,9 @@
-// App.js (React Frontend)
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import "./App.css";
 
 function App() {
     const [activeTab, setActiveTab] = useState("textSummarizer");
-    const [summary, setSummary] = useState("");
     const [customText, setCustomText] = useState("");
     const [textSummary, setTextSummary] = useState("");
     const [customSummarizing, setCustomSummarizing] = useState(false);
@@ -19,30 +16,179 @@ function App() {
     const [selectedVideoFile, setSelectedVideoFile] = useState(null);
     const [transcript, setTranscript] = useState("");
     const [transcribing, setTranscribing] = useState(false);
-    const [uploadedFileContent, setUploadedFileContent] = useState("");
 
+    // --- Text Summarizer Logic ---
     const handleTextChange = (e) => {
         const inputValue = e.target.value;
         setCustomText(inputValue);
-
-        if (inputValue.trim() === "") {
-            setError("");
-        } else if (countWords(inputValue) < 70) {
-            setError("⚠️ Enter at least 70 words to summarize.");
-        } else {
-            setError("");
-        }
+        validateText(inputValue);
     };
 
     const handleBlur = () => {
         setIsTouched(true);
-        if (customText.trim() !== "" && countWords(customText) < 70) {
+        validateText(customText);
+    };
+
+    const validateText = (text) => {
+        if (text.trim() === "") {
+            setError("");
+        } else if (countWords(text) < 70) {
             setError("⚠️ Enter at least 70 words to summarize.");
         } else {
             setError("");
         }
     };
 
+    const handleFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        setFile(selectedFile);
+        setCustomText("");
+        setYoutubeUrl("");
+        setSelectedVideoFile(null);
+        setTranscript("");
+        setTextSummary("");
+        setVideoSummary("");
+        setError("");
+        setIsTouched(false);
+    };
+
+    const handleCustomSummarize = async () => {
+        if (activeTab === "textSummarizer") {
+            if (!file && countWords(customText) < 70) {
+                setError("⚠️ Enter at least 70 words to summarize.");
+                return;
+            }
+            if (error) return;
+
+            setCustomSummarizing(true);
+            setTextSummary("");
+
+            const formData = new FormData();
+            formData.append("level", summaryLevel);
+
+            try {
+                let response;
+                if (file) {
+                    formData.append("file", file);
+                    response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/upload", formData, {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                    });
+                    setTextSummary(response.data.text);
+                } else if (customText.trim()) {
+                    response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/summarize", {
+                        transcript: customText,
+                        level: summaryLevel,
+                    });
+                    setTextSummary(response.data.text);
+                }
+                console.log("Summarization Response:", response ? response.data : null);
+            } catch (error) {
+                console.error("Error summarizing:", error);
+                alert("Error summarizing text.");
+            } finally {
+                setCustomSummarizing(false);
+                setFile(null);
+            }
+        } else if (activeTab === "transcriber" && transcript.trim()) {
+            if (countWords(transcript) < 70) {
+                alert("Transcription must have at least 70 words to summarize."); // Keep this alert for clarity
+                return;
+            }
+            setCustomSummarizing(true);
+            setVideoSummary("");
+
+            try {
+                const response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/summarize", {
+                    transcript: transcript,
+                    level: summaryLevel,
+                });
+                setVideoSummary(response.data.text);
+                console.log("Transcription Summary Response:", response.data);
+            } catch (error) {
+                console.error("Error summarizing transcription:", error);
+                alert("Error summarizing transcription.");
+            } finally {
+                setCustomSummarizing(false);
+            }
+        }
+    };
+
+    // --- Video Transcriber Logic ---
+    const handleYoutubeTranscribe = async () => {
+        if (!youtubeUrl.trim()) return;
+        setTranscribing(true);
+        setTranscript("");
+        setVideoSummary("");
+
+        try {
+            const response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/summarize-youtube", {
+                videoUrl: youtubeUrl,
+            });
+            console.log("YouTube Transcribe Response:", response.data);
+            setTranscript(response.data.transcript);
+        } catch (error) {
+            console.error("Error transcribing YouTube video:", error);
+            alert("Error transcribing YouTube video");
+        } finally {
+            setTranscribing(false);
+            setYoutubeUrl("");
+            setSelectedVideoFile(null);
+            setFile(null);
+            setCustomText("");
+        }
+    };
+
+    const handleVideoFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        setSelectedVideoFile(selectedFile);
+        setYoutubeUrl("");
+        setCustomText("");
+        setFile(null);
+        setTranscript("");
+        setTextSummary("");
+        setVideoSummary("");
+        setError("");
+        setIsTouched(false);
+    };
+
+    const handleVideoFileTranscribe = async () => {
+        if (!selectedVideoFile) {
+            alert("Please select a video file.");
+            return;
+        }
+
+        setTranscribing(true);
+        setTranscript("");
+        setVideoSummary("");
+
+        const formData = new FormData();
+        formData.append("video", selectedVideoFile);
+
+        try {
+            const response = await axios.post(
+                "https://ai-transcriber-summarizer-backend.onrender.com/transcribe-video",
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+            console.log("Video Transcribe Response:", response.data);
+            setTranscript(response.data.transcript);
+        } catch (error) {
+            console.error("Error transcribing video file:", error);
+            if (error.response) {
+                alert(`Error transcribing video file: ${error.response.data.error}`);
+            } else {
+                alert("Error transcribing video file");
+            }
+        } finally {
+            setTranscribing(false);
+            setSelectedVideoFile(null);
+            setYoutubeUrl("");
+            setFile(null);
+            setCustomText("");
+        }
+    };
+
+    // --- Utility Functions ---
     const countWords = (text) => {
         return text.trim() ? text.trim().split(/\s+/).length : 0;
     };
@@ -61,168 +207,8 @@ function App() {
         return <p>{text}</p>;
     };
 
-    const handleFileChange = (event) => {
-        console.log("File Change Event:", event);
-        const selectedFile = event.target.files[0];
-        console.log("Selected File:", selectedFile);
-        if (!selectedFile) return;
-        setFile(selectedFile);
-        setCustomText("");
-        setUploadedFileContent(""); // Clear any previous incorrect content
-        console.log("File:", selectedFile);
-        console.log("File State:", file);
-    };
-
-    useEffect(() => {
-        console.log("useEffect - file:", file);
-    }, [file]);
-
-    useEffect(() => {
-        console.log("useEffect - uploadedFileContent:", uploadedFileContent);
-    }, [uploadedFileContent]);
-
-    const handleCustomSummarize = async () => {
-        if (!transcript && !customText.trim() && !file) return;
-        setCustomSummarizing(true);
-
-        if (activeTab === "textSummarizer" && file) {
-            // Handle file upload summary using the /upload endpoint
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("level", summaryLevel);
-
-            try {
-                const response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/upload", formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                console.log("File upload response:", response.data);
-                setTextSummary(response.data.text); // Assuming the backend sends back { text: 'summary' }
-            } catch (error) {
-                console.error("File upload error:", error);
-                alert("Error uploading and summarizing file.");
-            } finally {
-                setCustomSummarizing(false);
-                setFile(null);
-                setUploadedFileContent(""); // Clear the incorrect content
-            }
-            return;
-        }
-
-        // Existing logic for summarizing text entered in the textarea
-        if (activeTab === "textSummarizer") {
-            setTextSummary("");
-        } else {
-            setVideoSummary("");
-        }
-
-        try {
-            const textToSummarize = transcript || customText;
-            const summarizePrompt = `Provide a concise summary of the following text, ensuring the output contains only the summary and no extra introductory phrases: ${textToSummarize}`;
-            const response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/summarize", {
-                transcript: summarizePrompt,
-                level: summaryLevel,
-            });
-            console.log("API Response:", response.data.text);
-
-            if (activeTab === "textSummarizer") {
-                setTextSummary(response.data.text);
-            } else {
-                setVideoSummary(response.data.text);
-            }
-
-            console.log("Custom Summary State:", activeTab === "textSummarizer" ? textSummary : videoSummary);
-        } catch (error) {
-            alert("Error summarizing text");
-        } finally {
-            setCustomSummarizing(false);
-        }
-    };
-
-    const handleYoutubeTranscribe = async () => {
-        if (!youtubeUrl.trim()) return;
-        setTranscribing(true);
-        setTranscript("");
-
-        try {
-            const response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/summarize-youtube", {
-                videoUrl: youtubeUrl,
-            });
-            console.log("YouTube Transcribe Response:", response.data);
-            console.log("Transcript from API:", response.data.transcript);
-            setTranscript(response.data.transcript);
-            console.log("Transcript State:", transcript);
-        } catch (error) {
-            console.error("Error transcribing YouTube video:", error);
-            alert("Error transcribing YouTube video");
-        } finally {
-            setTranscribing(false);
-            setYoutubeUrl("");
-            setSelectedVideoFile(null);
-            setCustomText("");
-            setFile(null);
-        }
-    };
-
-    const handleVideoFileChange = (event) => {
-        const selectedFile = event.target.files[0];
-        if (selectedFile) {
-            if (selectedFile.type.startsWith('video/') || selectedFile.type.startsWith('audio/')) {
-                setSelectedVideoFile(selectedFile);
-            } else {
-                alert('Please select a valid video or audio file.');
-                event.target.value = null;
-                setSelectedVideoFile(null);
-            }
-        }
-    };
-
-    const handleVideoFileTranscribe = async () => {
-        if (!selectedVideoFile) {
-            alert("Please select a video file.");
-            return;
-        }
-
-        setTranscribing(true);
-        setTranscript("");
-
-        const formData = new FormData();
-        formData.append("video", selectedVideoFile);
-
-        console.log("FormData:", formData);
-        console.log("File type:", selectedVideoFile.type);
-        console.log("File size:", selectedVideoFile.size);
-
-        try {
-            const response = await axios.post(
-                "http://localhost:5000/transcribe-video",
-                formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" },
-                }
-            );
-            console.log("Video Transcribe Response:", response.data);
-            setTranscript(response.data.transcript);
-        } catch (error) {
-            console.error("Error transcribing video file:", error);
-            if (error.response) {
-                alert(`Error transcribing video file: ${error.response.data.error}`);
-            } else {
-                alert("Error transcribing video file");
-            }
-        } finally {
-            setTranscribing(false);
-            setSelectedVideoFile(null);
-            setYoutubeUrl("");
-            setCustomText("");
-            setFile(null);
-        }
-    };
-
     return (
         <div className="container">
-            {console.log("Component re-rendered!")}
             <h1>🎧 AI Transcriber & Summarizer</h1>
 
             <div className="tabs">
@@ -244,13 +230,13 @@ function App() {
                             onBlur={handleBlur}
                             placeholder="Enter text to summarize..."
                             className={error ? "error-border" : ""}
-                            disabled={file || youtubeUrl || selectedVideoFile}
+                            disabled={file}
                         />
                         {error && <p className="error-message">{error}</p>}
                     </div>
 
                     <div className="section">
-                        <input type="file" accept=".pdf,.txt" onChange={handleFileChange} disabled={customText.trim().length > 0 || youtubeUrl || selectedVideoFile} />
+                        <input type="file" accept=".pdf,.txt" onChange={handleFileChange} disabled={customText.trim().length > 0} />
                     </div>
 
                     <div className="section">
@@ -261,9 +247,7 @@ function App() {
                         </select>
                         <button
                             onClick={handleCustomSummarize}
-                            disabled={
-                                (!file && countWords(customText) < 70) || !!error || customSummarizing
-                            }
+                            disabled={(!file && countWords(customText) < 70) || !!error || customSummarizing}
                         >
                             {customSummarizing ? <div className="loading-spinner"></div> : "Summarize Text"}
                         </button>
@@ -280,13 +264,14 @@ function App() {
             {activeTab === "transcriber" && (
                 <div className="card">
                     <h2>🔊 Video & Audio Transcriber</h2>
-              {/*     <div className="section">
+                    {/*
+                    <div className="section">
                         <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="YouTube URL" disabled={selectedVideoFile} />
                         <button onClick={handleYoutubeTranscribe} disabled={transcribing || !youtubeUrl.trim() || selectedVideoFile}>
                             {transcribing ? <div className="loading-spinner"></div> : "Transcribe YouTube"}
                         </button>
                     </div>
-*/}
+                    */}
                     <div className="section">
                         <input type="file" accept="video/*, audio/*" onChange={handleVideoFileChange} disabled={youtubeUrl} />
                         <button
@@ -315,7 +300,7 @@ function App() {
                             </select>
                             <button
                                 onClick={handleCustomSummarize}
-                                disabled={customSummarizing || !transcript}
+                                disabled={customSummarizing || !transcript || countWords(transcript) < 70} // Re-introduced the word count check
                             >
                                 {customSummarizing ? <div className="loading-spinner"></div> : "Summarize Transcription"}
                             </button>
