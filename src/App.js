@@ -92,7 +92,7 @@ function App() {
             formData.append("level", summaryLevel);
 
             try {
-                const response = await axios.post("http://localhost:5000/upload", formData, {
+                const response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/upload", formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -120,7 +120,7 @@ function App() {
         try {
             const textToSummarize = transcript || customText;
             const summarizePrompt = `Provide a concise summary of the following text, ensuring the output contains only the summary and no extra introductory phrases: ${textToSummarize}`;
-            const response = await axios.post("http://localhost:5000/summarize", {
+            const response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/summarize", {
                 transcript: summarizePrompt,
                 level: summaryLevel,
             });
@@ -146,7 +146,7 @@ function App() {
         setTranscript("");
 
         try {
-            const response = await axios.post("http://localhost:5000/summarize-youtube", {
+            const response = await axios.post("https://ai-transcriber-summarizer-backend.onrender.com/summarize-youtube", {
                 videoUrl: youtubeUrl,
             });
             console.log("YouTube Transcribe Response:", response.data);
