@@ -19,7 +19,7 @@ function App() {
     const [transcribing, setTranscribing] = useState(false);
     const [uploadedFileContent, setUploadedFileContent] = useState(""); // New state for uploaded file content
 
-    const API_BASE_URL = "https://ai-transcriber-summarizer-backend.onrender.com"; // Updated backend URL
+    const API_BASE_URL = "http://localhost:5000"; // Updated backend URL
 
     // --- Text Summarizer Logic ---
     const handleTextChange = (e) => {
