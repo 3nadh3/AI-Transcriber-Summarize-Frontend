@@ -279,14 +279,14 @@ function App() {
             {activeTab === "transcriber" && (
                 <div className="card">
                     <h2>🔊 Video & Audio Transcriber</h2>
-                    { */
+                    {
                         <div className="section">
                             <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="YouTube URL" disabled={selectedVideoFile} />
                             <button onClick={handleYoutubeTranscribe} disabled={transcribing || !youtubeUrl.trim() || selectedVideoFile}>
                                 {transcribing ? <div className="loading-spinner"></div> : "Transcribe YouTube"}
                             </button>
                         </div>
-                   */ }
+                    }
                     <div className="section">
                         <input type="file" accept="video/*, audio/*" onChange={handleVideoFileChange} disabled={youtubeUrl} />
                         <button
