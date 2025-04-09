@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# AI-Transcriber-Summarize-Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+AI Transcriber & Summarizer is a smart web application that allows users to extract meaningful summaries from text, PDF, YouTube videos, video files, and audio content. It uses advanced AI models (via a backend API) to transcribe and summarize content in different formats, providing concise, core, or bullet-point summaries for quick understanding.
 
-## Available Scripts
+**🚀 Live Demo:** [https://transcripto-ai.netlify.app/](https://transcripto-ai.netlify.app/)
 
-In the project directory, you can run:
+## 🔍 Features
 
-### `npm start`
+* **✍️ Text Summarization:** Paste custom text directly into the interface or upload `.txt` files to get AI-powered summaries.
+* **🔊 YouTube Transcriber & Summarizer:** Simply enter a YouTube video URL to have its audio transcribed (via backend) and then summarized.
+* **📹 Video/Audio File Support:** Upload local video and audio files (various formats supported by the backend) to get transcriptions and summaries.
+* **🧠 Summary Modes:** Choose the level of detail for your summary:
+    * **Core:** A very brief and essential summary.
+    * **Concise:** A more detailed and comprehensive summary.
+    * **Bullet Points:** Key information presented in an easy-to-read bulleted list.
+* **⚡ Real-time Feedback:**
+    * **Word Count Checker:** See the word count of your input text in real-time.
+    * **Input Validation:** Clear warning messages (e.g., for insufficient text length) to guide the user.
+* **✨ User-Friendly Interface:** A clean and intuitive design for a seamless user experience.
+* **🔄 Re-Summarize Option:** Easily generate a new summary with a different summary level without re-entering the text or uploading the file.
+* **⚙️ Backend Integration:** Communicates with a backend API (likely built with Node.js and utilizing AI models like OpenAI or similar) to handle transcription and summarization tasks.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🛠️ Technologies Used
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+* **React:** A JavaScript library for building user interfaces.
+* **Axios:** A promise-based HTTP client for making API requests to the backend.
+* **CSS:** For styling the application.
+* **Netlify:** Used for hosting the live demo.
 
-### `npm test`
+## ⚙️ Setup (for Developers)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+If you want to run this frontend locally, follow these steps:
 
-### `npm run build`
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/3nadh3/AI-Transcriber-Summarize-Frontend.git
+    cd AI-Transcriber-Summarize-Frontend
+    ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3.  **Configure Backend URL:**
+    * Open the `src/App.js` file.
+    * Locate the `API_BASE_URL` constant (it's likely defined near the top).
+    * **Update this URL to point to your locally running backend API.** For example:
+        ```javascript
+        const API_BASE_URL = "http://localhost:5000";
+        ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4.  **Start the application:**
+    ```bash
+    npm start
+    # or
+    yarn start
+    ```
 
-### `npm run eject`
+    This will start the development server, and you can view the application in your browser (usually at `http://localhost:3000`).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🔗 Backend Repository
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This frontend application relies on a backend API to perform the heavy lifting of transcription and summarization. You can find the backend repository (with setup instructions) here:
