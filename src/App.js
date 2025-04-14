@@ -281,12 +281,26 @@ function App() {
                     <h2>🔊 Video & Audio Transcriber</h2>
                     {
                         
-                        <div className="section">
-                            <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="YouTube URL" disabled />
-                            <button onClick={handleYoutubeTranscribe} disabled={transcribing || !youtubeUrl.trim() || selectedVideoFile} disabled>
-                                {transcribing ? <div className="loading-spinner"></div> : "Transcribe YouTube"}
-                            </button>
-                        </div>
+                    <div className="section">
+    <input 
+        type="text" 
+        value={youtubeUrl} 
+        onChange={(e) => setYoutubeUrl(e.target.value)} 
+        placeholder="YouTube URL" 
+        disabled 
+    />
+
+    <div className="tooltip-wrapper">
+        <button 
+            onClick={handleYoutubeTranscribe} 
+            disabled 
+        >
+            {transcribing ? <div className="loading-spinner"></div> : "Transcribe YouTube"}
+        </button>
+        <span className="tooltip-text">This feature is currently unavailable</span>
+    </div>
+</div>
+
                     
                     }
                     <div className="section">
