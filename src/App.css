@@ -335,6 +335,34 @@ textarea:required:invalid + .error-message {
 input[type="file"]::-webkit-file-upload-button {
   display: none;
 }
+.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: not-allowed;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 6px 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* position above */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
 
 /* === Responsive Design === */
 /* Extra large screens */
@@ -419,6 +447,7 @@ input[type="file"]::-webkit-file-upload-button {
     max-height: 180px;
   }
 }
+
 
 /* Mobile devices */
 @media (max-width: 767px) {
