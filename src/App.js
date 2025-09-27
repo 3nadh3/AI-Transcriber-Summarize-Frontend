@@ -345,6 +345,20 @@ function App() {
                     )}
                 </div>
             )}
+  <div>
+            <p className="footer">
+  Developed by Your{" "}
+<a 
+  href="https://www.linkedin.com/in/musunuri-trinadh/" 
+  className="highlight-link"
+>
+  Trinadh Musunuri
+</a>
+
+</p>
+
+        </div>
+
         </div>
     );
 }

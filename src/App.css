@@ -364,6 +364,7 @@ input[type="file"]::-webkit-file-upload-button {
     opacity: 1;
 }
 
+
 /* === Responsive Design === */
 /* Extra large screens */
 @media (min-width: 1200px) {
@@ -470,3 +471,26 @@ input[type="file"]::-webkit-file-upload-button {
     font-size: 1.2em;
     margin-bottom: 10px;
   }   }
+
+
+
+  .footer {
+    margin-top: 20px;
+    font-size: var(--font-size-small);
+    color: var(--light-text-color);
+    text-align: center;
+  }
+
+
+  .highlight-link {
+  text-decoration: none;
+  color: #45a4fdff;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  padding: 2px 4px;
+  border-radius: 5px;
+}
+
+.highlight-link:hover {
+  background-color: rgba(173, 216, 230, 0.3);
+}
